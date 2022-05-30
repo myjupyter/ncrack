@@ -11,27 +11,35 @@ import (
 func main() {
 	c := ncrack.New(
 		ncrack.WithHostOption(
-			ncrack.WithHostOptionProtocols(
-				ncrack.ProtocolTypePSQL,
-			),
-			ncrack.WithHostOptionPorts(5432),
-			ncrack.WithHostOptionTarget("0.0.0.0"),
-			ncrack.WithHostOptionServiceOptions(
-				ncrack.WithServiceOptionConnDelay(1),
-			),
-		),
-		ncrack.WithHostOption(
-			ncrack.WithHostOptionProtocols(
-				ncrack.ProtocolTypePSQL,
-			),
+			ncrack.WithHostOptionProtocols(ncrack.ProtocolTypePSQL),
 			ncrack.WithHostOptionPorts(5432),
 			ncrack.WithHostOptionTarget("scanner-dev.echelon.lan"),
 			ncrack.WithHostOptionServiceOptions(
 				ncrack.WithServiceOptionConnDelay(1),
 			),
 		),
-		ncrack.WithUser("postgres", "admin", "psql"),
-		ncrack.WithPass("postgres", "admin", "psql"),
+		ncrack.WithHostOption(
+			ncrack.WithHostOptionProtocols(ncrack.ProtocolTypeSSH),
+			ncrack.WithHostOptionPorts(22),
+			ncrack.WithHostOptionTarget("scanner-dev.echelon.lan"),
+			ncrack.WithHostOptionServiceOptions(
+				ncrack.WithServiceOptionConnDelay(1),
+			),
+		),
+		ncrack.WithModuleOption(
+			ncrack.WithModuleOptionProtocol(ncrack.ProtocolTypePSQL),
+			ncrack.WithModuleOptionServiceOptions(
+				ncrack.WithServiceOptionMinConnLimit(5),
+			),
+		),
+		ncrack.WithModuleOption(
+			ncrack.WithModuleOptionProtocol(ncrack.ProtocolTypeSSH),
+			ncrack.WithModuleOptionServiceOptions(
+				ncrack.WithServiceOptionMinConnLimit(5),
+			),
+		),
+		ncrack.WithUser("postgres", "admin", "psql", "echelon", "seclab"),
+		ncrack.WithPass("postgres", "admin", "psql", "echelon", "seclab"),
 		ncrack.WithXMLOutput(),
 	)
 

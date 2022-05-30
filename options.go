@@ -63,19 +63,3 @@ func WithXMLOutput() Option {
 		c.args = append(c.args, "-")
 	}
 }
-
-type ModuleOption struct {
-	Protocols ProtocolType
-}
-
-func (m ModuleOption) String() string {
-	return ""
-}
-
-func WithPerModuleOption(ms ...ModuleOption) Option {
-	return func(c *Cracker) {
-		for i := range ms {
-			c.args = append(c.args, ms[i].String())
-		}
-	}
-}

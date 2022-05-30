@@ -5,9 +5,9 @@ import "strconv"
 type HostOption func(*HostOptions)
 
 type HostOptions struct {
-	Protocols      []ProtocolType
+	Protocol       ProtocolType
 	Target         string
-	Ports          []uint16
+	Port           uint16
 	ServiceOptions ServiceOptions
 }
 
@@ -21,9 +21,9 @@ func WithHostOption(opts ...HostOption) Option {
 	}
 }
 
-func WithHostOptionProtocols(ps ...ProtocolType) HostOption {
+func WithHostOptionProtocols(p ProtocolType) HostOption {
 	return func(h *HostOptions) {
-		h.Protocols = append(h.Protocols, ps...)
+		h.Protocol = p
 	}
 }
 
@@ -33,9 +33,9 @@ func WithHostOptionTarget(target string) HostOption {
 	}
 }
 
-func WithHostOptionPorts(ps ...uint16) HostOption {
+func WithHostOptionPorts(p uint16) HostOption {
 	return func(h *HostOptions) {
-		h.Ports = append(h.Ports, ps...)
+		h.Port = p
 	}
 }
 
@@ -51,24 +51,18 @@ func WithHostOptionServiceOptions(opts ...ServiceOption) HostOption {
 }
 
 func (h HostOptions) String() string {
-	var protocols string
-	for i := range h.Protocols {
-		protocols += h.Protocols[i].String()
+	if h.Protocol == ProtocolTypeUnspecified {
+		return ""
 	}
-	if protocols != "" {
-		protocols += "://"
+	if h.Target == "" {
+		return ""
 	}
-	var ports string
-	for i := range h.Ports {
-		if i > 0 {
-			ports += ","
-		}
-		ports += strconv.Itoa(int(h.Ports[i]))
+	if h.Port == 0 {
+		return ""
 	}
-	if ports != "" {
-		ports = ":" + ports
+	var services string
+	if len(h.ServiceOptions) != 0 {
+		services += "," + h.ServiceOptions.String()
 	}
-	services := h.ServiceOptions.String()
-
-	return protocols + h.Target + ports + services
+	return h.Protocol.String() + "://" + h.Target + ":" + strconv.Itoa(int(h.Port)) + services
 }
