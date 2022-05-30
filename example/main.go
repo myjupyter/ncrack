@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/xml"
 	"fmt"
 
 	"github.com/myjupyter/ncrack"
@@ -9,15 +10,25 @@ import (
 
 func main() {
 	c := ncrack.New(
-		ncrack.WithPerHostOption(ncrack.HostOption{
-			Protocols: []ncrack.ProtocolType{
-				ncrack.ProtocolTypePSQL,
+		ncrack.WithPerHostOption([]ncrack.HostOption{
+			{
+				Protocols: []ncrack.ProtocolType{
+					ncrack.ProtocolTypePSQL,
+				},
+				Target: "0.0.0.0",
+				Ports:  []uint16{5432},
 			},
-			Target: "0.0.0.0",
-			Ports:  []uint16{5432},
-		}),
+			{
+				Protocols: []ncrack.ProtocolType{
+					ncrack.ProtocolTypePSQL,
+				},
+				Target: "scanner-dev.echelon.lan",
+				Ports:  []uint16{5432},
+			},
+		}...),
 		ncrack.WithUser("postgres"),
 		ncrack.WithPass("postgres"),
+		ncrack.WithXMLOutput(),
 	)
 
 	fmt.Println(c.Args())
@@ -28,4 +39,11 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(string(buf))
+
+	r := &ncrack.Run{}
+	err = xml.Unmarshal(buf, r)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%v+", r)
 }

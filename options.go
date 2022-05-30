@@ -63,6 +63,7 @@ func WithProxy(addr string) Option {
 func WithXMLOutput() Option {
 	return func(c *Cracker) {
 		c.args = append(c.args, "-oX")
+		c.args = append(c.args, "-")
 	}
 }
 
