@@ -10,24 +10,28 @@ import (
 
 func main() {
 	c := ncrack.New(
-		ncrack.WithPerHostOption([]ncrack.HostOption{
-			{
-				Protocols: []ncrack.ProtocolType{
-					ncrack.ProtocolTypePSQL,
-				},
-				Target: "0.0.0.0",
-				Ports:  []uint16{5432},
-			},
-			{
-				Protocols: []ncrack.ProtocolType{
-					ncrack.ProtocolTypePSQL,
-				},
-				Target: "scanner-dev.echelon.lan",
-				Ports:  []uint16{5432},
-			},
-		}...),
-		ncrack.WithUser("postgres"),
-		ncrack.WithPass("postgres"),
+		ncrack.WithHostOption(
+			ncrack.WithHostOptionProtocols(
+				ncrack.ProtocolTypePSQL,
+			),
+			ncrack.WithHostOptionPorts(5432),
+			ncrack.WithHostOptionTarget("0.0.0.0"),
+			ncrack.WithHostOptionServiceOptions(
+				ncrack.WithServiceOptionConnDelay(1),
+			),
+		),
+		ncrack.WithHostOption(
+			ncrack.WithHostOptionProtocols(
+				ncrack.ProtocolTypePSQL,
+			),
+			ncrack.WithHostOptionPorts(5432),
+			ncrack.WithHostOptionTarget("scanner-dev.echelon.lan"),
+			ncrack.WithHostOptionServiceOptions(
+				ncrack.WithServiceOptionConnDelay(1),
+			),
+		),
+		ncrack.WithUser("postgres", "admin", "psql"),
+		ncrack.WithPass("postgres", "admin", "psql"),
 		ncrack.WithXMLOutput(),
 	)
 

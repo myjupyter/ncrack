@@ -1,9 +1,6 @@
 package ncrack
 
-import (
-	"strconv"
-	"strings"
-)
+import "strings"
 
 type Option func(*Cracker)
 
@@ -36,7 +33,7 @@ func WithHostsExclude(hs []string) Option {
 func WithUser(us ...string) Option {
 	return func(c *Cracker) {
 		c.args = append(c.args, "--user")
-		c.args = append(c.args, us...)
+		c.args = append(c.args, strings.Join(us, ","))
 	}
 }
 
@@ -67,28 +64,18 @@ func WithXMLOutput() Option {
 	}
 }
 
-type HostOption struct {
-	Protocols []ProtocolType
-	Target    string
-	Ports     []uint16
+type ModuleOption struct {
+	Protocols ProtocolType
 }
 
-func (h HostOption) String() string {
-	var protocols string
-	for i := range h.Protocols {
-		protocols += h.Protocols[i].String()
-	}
-	var ports string
-	for i := range h.Ports {
-		ports += strconv.Itoa(int(h.Ports[i]))
-	}
-	return protocols + "://" + h.Target + ":" + ports
+func (m ModuleOption) String() string {
+	return ""
 }
 
-func WithPerHostOption(hs ...HostOption) Option {
+func WithPerModuleOption(ms ...ModuleOption) Option {
 	return func(c *Cracker) {
-		for i := range hs {
-			c.args = append(c.args, hs[i].String())
+		for i := range ms {
+			c.args = append(c.args, ms[i].String())
 		}
 	}
 }
