@@ -11,8 +11,10 @@ import (
 func main() {
 	c := ncrack.New(
 		ncrack.WithHostOption(
-			ncrack.WithHostOptionProtocols(ncrack.ProtocolTypePSQL),
+			ncrack.WithHostOptionPorts(5437),
+			ncrack.WithHostOptionProtocols(ncrack.ProtocolTypePostgres),
 			ncrack.WithHostOptionPorts(5432),
+			ncrack.WithHostOptionPorts(5433),
 			ncrack.WithHostOptionTarget("scanner-dev.echelon.lan"),
 			ncrack.WithHostOptionServiceOptions(
 				ncrack.WithServiceOptionConnDelay(1),
@@ -27,13 +29,13 @@ func main() {
 			),
 		),
 		ncrack.WithModuleOption(
-			ncrack.WithModuleOptionProtocol(ncrack.ProtocolTypePSQL),
+			ncrack.WithModuleOptionProtocol("psql,ssh", "ftp"),
 			ncrack.WithModuleOptionServiceOptions(
 				ncrack.WithServiceOptionMinConnLimit(5),
 			),
 		),
 		ncrack.WithModuleOption(
-			ncrack.WithModuleOptionProtocol(ncrack.ProtocolTypeSSH),
+			ncrack.WithModuleOptionProtocol("ssh"),
 			ncrack.WithModuleOptionServiceOptions(
 				ncrack.WithServiceOptionMinConnLimit(5),
 			),

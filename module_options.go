@@ -1,9 +1,11 @@
 package ncrack
 
+import "strings"
+
 type ModuleOption func(*ModuleOptions)
 
 type ModuleOptions struct {
-	Protocol       ProtocolType
+	Protocol       string
 	ServiceOptions ServiceOptions
 }
 
@@ -28,20 +30,20 @@ func WithModuleOptionServiceOptions(opts ...ServiceOption) ModuleOption {
 	}
 }
 
-func WithModuleOptionProtocol(p ProtocolType) ModuleOption {
+func WithModuleOptionProtocol(p ...string) ModuleOption {
 	return func(m *ModuleOptions) {
-		m.Protocol = p
+		m.Protocol = strings.Join(p, ",")
 	}
 }
 
 func (m ModuleOptions) String() string {
-	if m.Protocol == ProtocolTypeUnspecified {
+	if m.Protocol == "" {
 		return ""
 	}
 	services := m.ServiceOptions.String()
 	if services == "" {
 		return ""
 	}
-	return m.Protocol.String() + ":" + services
+	return m.Protocol + ":" + services
 
 }

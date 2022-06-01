@@ -5,7 +5,7 @@ import "strconv"
 type HostOption func(*HostOptions)
 
 type HostOptions struct {
-	Protocol       ProtocolType
+	Protocol       string
 	Target         string
 	Port           uint16
 	ServiceOptions ServiceOptions
@@ -21,7 +21,7 @@ func WithHostOption(opts ...HostOption) Option {
 	}
 }
 
-func WithHostOptionProtocols(p ProtocolType) HostOption {
+func WithHostOptionProtocols(p string) HostOption {
 	return func(h *HostOptions) {
 		h.Protocol = p
 	}
@@ -51,7 +51,7 @@ func WithHostOptionServiceOptions(opts ...ServiceOption) HostOption {
 }
 
 func (h HostOptions) String() string {
-	if h.Protocol == ProtocolTypeUnspecified {
+	if h.Protocol == "" {
 		return ""
 	}
 	if h.Target == "" {
@@ -64,5 +64,5 @@ func (h HostOptions) String() string {
 	if len(h.ServiceOptions) != 0 {
 		services += "," + h.ServiceOptions.String()
 	}
-	return h.Protocol.String() + "://" + h.Target + ":" + strconv.Itoa(int(h.Port)) + services
+	return string(h.Protocol) + "://" + h.Target + ":" + strconv.Itoa(int(h.Port)) + services
 }
