@@ -2,6 +2,10 @@ package ncrack
 
 type ProtocolType string
 
+func (pt ProtocolType) String() string {
+	return string(pt)
+}
+
 const (
 	ProtocolTypeUnspecified  ProtocolType = ""
 	ProtocolTypeNetbiosSSN   ProtocolType = "netbios-ssn"
