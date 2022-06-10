@@ -1,8 +1,17 @@
 package ncrack
 
-import "strings"
+import (
+	"context"
+	"strings"
+)
 
 type Option func(*Cracker)
+
+func WithContext(ctx context.Context) Option {
+	return func(c *Cracker) {
+		c.ctx = ctx
+	}
+}
 
 // Input from Nmap's -oX XML output format
 func WithNmapXML(path string) Option {
