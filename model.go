@@ -7,40 +7,46 @@ import (
 )
 
 type Run struct {
-	XMLName xml.Name `xml:"ncrackrun"`
+	XMLName xml.Name `xml:"ncrackrun" json:"-"`
 
-	Args             string    `xml:"args,attr"`
-	Start            Timestamp `xml:"start,attr"`
-	StartStr         string    `xml:"startstr,attr"`
-	Version          string    `xml:"version,attr"`
-	XMLOutputVersion string    `xml:"xmloutputversion,attr"`
+	Args             string    `xml:"args,attr" json:"args"`
+	Start            Timestamp `xml:"start,attr" json:"start"`
+	StartStr         string    `xml:"startstr,attr" json:"startstr"`
+	Version          string    `xml:"version,attr" json:"version"`
+	XMLOutputVersion string    `xml:"xmloutputversion,attr" json:"xmloutputversion"`
 
-	Services []Service `xml:"service"`
+	Services []Service `xml:"service" json:"service"`
+
+	rawXML []byte `xml:"-" json:"-"`
+}
+
+func (r Run) Bytes() []byte {
+	return r.rawXML
 }
 
 type Service struct {
-	StartTime Timestamp `xml:"starttime,attr"`
-	EndTime   Timestamp `xml:"endtime,attr"`
+	StartTime Timestamp `xml:"starttime,attr" json:"starttime"`
+	EndTime   Timestamp `xml:"endtime,attr" json:"endtime"`
 
-	Address     Address     `xml:"address"`
-	Port        Port        `xml:"port"`
-	Credentials Credentials `xml:"credentials"`
+	Address     Address     `xml:"address" json:"address"`
+	Port        Port        `xml:"port" json:"port"`
+	Credentials Credentials `xml:"credentials" json:"credentials"`
 }
 
 type Address struct {
-	Addr string `xml:"addr,attr"`
-	Type string `xml:"addrtype,attr"`
+	Addr string `xml:"addr,attr" json:"addr"`
+	Type string `xml:"addrtype,attr" json:"addrtype"`
 }
 
 type Port struct {
-	Protocol string `xml:"protocol,attr"`
-	Port     uint16 `xml:"portid,attr"`
-	Name     string `xml:"psql,attr"`
+	Protocol string `xml:"protocol,attr" json:"protocol"`
+	Port     uint16 `xml:"portid,attr" json:"portid"`
+	Name     string `xml:"name,attr" json:"name"`
 }
 
 type Credentials struct {
-	Username string `xml:"username,attr"`
-	Password string `xml:"password,attr"`
+	Username string `xml:"username,attr" json:"username"`
+	Password string `xml:"password,attr" json:"password"`
 }
 
 // Timestamp represents time as a UNIX timestamp in seconds.

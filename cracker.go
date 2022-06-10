@@ -3,6 +3,7 @@ package ncrack
 import (
 	"bytes"
 	"context"
+	"encoding/xml"
 	"errors"
 	"os/exec"
 	"strings"
@@ -10,6 +11,7 @@ import (
 
 type Cracker struct {
 	args []string
+	ctx  context.Context
 }
 
 func New(opts ...Option) *Cracker {
@@ -24,8 +26,8 @@ func (c Cracker) Args() []string {
 	return c.args
 }
 
-func (c Cracker) Run(ctx context.Context) ([]byte, error) {
-	cmd := exec.CommandContext(ctx, "ncrack", c.args...)
+func (c Cracker) RunBytes() ([]byte, error) {
+	cmd := exec.CommandContext(c.returnCtx(), "ncrack", c.args...)
 	buf, errBuf := bytes.NewBuffer(nil), bytes.NewBuffer(nil)
 	cmd.Stdout = buf
 	cmd.Stderr = errBuf
@@ -36,4 +38,26 @@ func (c Cracker) Run(ctx context.Context) ([]byte, error) {
 		return nil, err
 	}
 	return buf.Bytes(), nil
+}
+
+func (c Cracker) Run() (res *Run, err error) {
+	data, err := c.RunBytes()
+	if err != nil {
+		return nil, err
+	}
+	res = &Run{
+		rawXML: data,
+	}
+	err = xml.Unmarshal(data, res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (c Cracker) returnCtx() context.Context {
+	if c.ctx == nil {
+		return context.Background()
+	}
+	return c.ctx
 }

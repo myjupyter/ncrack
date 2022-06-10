@@ -39,7 +39,7 @@ func WithHostOptionPorts(p uint16) HostOption {
 	}
 }
 
-func WithHostOptionServiceOptions(opts ...ServiceOption) HostOption {
+func WithServiceOptions(opts ...ServiceOption) HostOption {
 	return func(h *HostOptions) {
 		if h.ServiceOptions == nil {
 			h.ServiceOptions = make(ServiceOptions, 1)

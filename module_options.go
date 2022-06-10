@@ -20,7 +20,7 @@ func WithModuleOption(opts ...ModuleOption) Option {
 	}
 }
 
-func WithModuleOptionServiceOptions(opts ...ServiceOption) ModuleOption {
+func WithModuleServiceOptions(opts ...ServiceOption) ModuleOption {
 	return func(m *ModuleOptions) {
 		so := ServiceOptions{}
 		for _, opt := range opts {
