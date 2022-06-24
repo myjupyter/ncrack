@@ -1,14 +1,12 @@
 package ncrack
 
-import "strconv"
-
 type HostOption func(*HostOptions)
 
 type HostOptions struct {
-	Protocol       string
-	Target         string
-	Port           uint16
-	ServiceOptions ServiceOptions
+	Protocol       arg
+	Target         arg
+	Port           arg
+	ServiceOptions arg
 }
 
 // WithHostOption methods applies options to reffering host(s)
@@ -25,7 +23,7 @@ func WithHostOption(opts ...HostOption) Option {
 // WithHostOptionProtocols provides protocol
 func WithHostOptionProtocols(p string) HostOption {
 	return func(h *HostOptions) {
-		h.Protocol = p
+		h.Protocol.Val = p
 	}
 }
 
@@ -36,14 +34,14 @@ func WithHostOptionProtocols(p string) HostOption {
 // To get more information see: https://nmap.org/ncrack/man.html
 func WithHostOptionTarget(target string) HostOption {
 	return func(h *HostOptions) {
-		h.Target = target
+		h.Target.Val = target
 	}
 }
 
 // WithHostOptionPorts speccifies what port will be cracked
 func WithHostOptionPorts(p uint16) HostOption {
 	return func(h *HostOptions) {
-		h.Port = p
+		h.Port.Val = p
 	}
 }
 
@@ -51,28 +49,15 @@ func WithHostOptionPorts(p uint16) HostOption {
 // see service_options.go
 func WithServiceOptions(opts ...ServiceOption) HostOption {
 	return func(h *HostOptions) {
-		if h.ServiceOptions == nil {
-			h.ServiceOptions = make(ServiceOptions, 1)
-		}
+		so := ServiceOptions{}
 		for _, opt := range opts {
-			opt(&h.ServiceOptions)
+			opt(&so)
 		}
+		h.ServiceOptions.Val = so
 	}
 }
 
 func (h HostOptions) String() string {
-	if h.Protocol == "" {
-		return ""
-	}
-	if h.Target == "" {
-		return ""
-	}
-	if h.Port == 0 {
-		return ""
-	}
-	var services string
-	if len(h.ServiceOptions) != 0 {
-		services += "," + h.ServiceOptions.String()
-	}
-	return string(h.Protocol) + "://" + h.Target + ":" + strconv.Itoa(int(h.Port)) + services
+	return h.Protocol.WithSchemaAfter() +
+		h.Target.WithColonBetween(h.Port.WithColumnBetween(h.ServiceOptions.Arg()))
 }

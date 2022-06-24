@@ -23,7 +23,7 @@ func WithGlobalServiceOptions(opts ...ServiceOption) Option {
 
 func withServiceOptions(opts ...ServiceOption) Option {
 	return func(c *Cracker) {
-		so := make(ServiceOptions, 0, len(opts))
+		so := ServiceOptions{}
 		for _, opt := range opts {
 			opt(&so)
 		}

@@ -5,8 +5,8 @@ import "strings"
 type ModuleOption func(*ModuleOptions)
 
 type ModuleOptions struct {
-	Protocol       string
-	ServiceOptions ServiceOptions
+	Protocol       arg
+	ServiceOptions arg
 }
 
 // Options in this mode apply to all hosts that are associated with the particular service/module
@@ -29,25 +29,17 @@ func WithModuleServiceOptions(opts ...ServiceOption) ModuleOption {
 		for _, opt := range opts {
 			opt(&so)
 		}
-		m.ServiceOptions = so
+		m.ServiceOptions.Val = so
 	}
 }
 
 // WithModuleOptionProtocol defines module type
 func WithModuleOptionProtocol(p ...string) ModuleOption {
 	return func(m *ModuleOptions) {
-		m.Protocol = strings.Join(p, ",")
+		m.Protocol.Val = strings.Join(p, ",")
 	}
 }
 
 func (m ModuleOptions) String() string {
-	if m.Protocol == "" {
-		return ""
-	}
-	services := m.ServiceOptions.String()
-	if services == "" {
-		return ""
-	}
-	return m.Protocol + ":" + services
-
+	return m.Protocol.WithColonAfter() + m.ServiceOptions.Arg()
 }
