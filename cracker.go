@@ -22,10 +22,12 @@ func New(opts ...Option) *Cracker {
 	return c
 }
 
+// Args method outputs arguments passed to ncrack
 func (c Cracker) Args() []string {
 	return c.args
 }
 
+// RunBytes synchronously executes ncrack,
 func (c Cracker) RunBytes() ([]byte, error) {
 	cmd := exec.CommandContext(c.returnCtx(), "ncrack", c.args...)
 	buf, errBuf := bytes.NewBuffer(nil), bytes.NewBuffer(nil)
@@ -40,6 +42,7 @@ func (c Cracker) RunBytes() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
+// Run synchronously executes ncrack
 func (c Cracker) Run() (res *Run, err error) {
 	data, err := c.RunBytes()
 	if err != nil {

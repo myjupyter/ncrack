@@ -9,6 +9,7 @@ type ModuleOptions struct {
 	ServiceOptions ServiceOptions
 }
 
+// Options in this mode apply to all hosts that are associated with the particular service/module
 func WithModuleOption(opts ...ModuleOption) Option {
 	return func(c *Cracker) {
 		mo := ModuleOptions{}
@@ -20,6 +21,8 @@ func WithModuleOption(opts ...ModuleOption) Option {
 	}
 }
 
+// WithModuleServiceOptions provides ServiceModule to reffering module
+// see service_options.go
 func WithModuleServiceOptions(opts ...ServiceOption) ModuleOption {
 	return func(m *ModuleOptions) {
 		so := ServiceOptions{}
@@ -30,6 +33,7 @@ func WithModuleServiceOptions(opts ...ServiceOption) ModuleOption {
 	}
 }
 
+// WithModuleOptionProtocol defines module type
 func WithModuleOptionProtocol(p ...string) ModuleOption {
 	return func(m *ModuleOptions) {
 		m.Protocol = strings.Join(p, ",")
