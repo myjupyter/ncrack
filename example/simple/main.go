@@ -47,6 +47,9 @@ func main() {
 		ncrack.WithUser("postgres", "admin", "psql", "postgres"),
 		ncrack.WithPass("postgres", "admin", "psql", "postgres"),
 		ncrack.WithXMLOutput(),
+		ncrack.WithFilter(func(s *ncrack.Service) bool {
+			return s.Credentials.Password != "" && s.Credentials.Username != ""
+		}),
 	)
 
 	res, err := c.Run()

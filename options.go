@@ -95,3 +95,10 @@ func WithXMLOutput() Option {
 		c.args = append(c.args, "-")
 	}
 }
+
+// WithFilter provides function for service filtration
+func WithFilter(fn func(*Service) bool) Option {
+	return func(c *Cracker) {
+		c.filterFunc = fn
+	}
+}

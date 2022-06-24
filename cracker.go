@@ -10,8 +10,9 @@ import (
 )
 
 type Cracker struct {
-	args []string
-	ctx  context.Context
+	args       []string
+	ctx        context.Context
+	filterFunc func(*Service) bool
 }
 
 func New(opts ...Option) *Cracker {
@@ -27,8 +28,8 @@ func (c Cracker) Args() []string {
 	return c.args
 }
 
-// RunBytes synchronously executes ncrack,
-func (c Cracker) RunBytes() ([]byte, error) {
+// RunBytes synchronously executes ncrack and get
+func (c Cracker) runBytes() ([]byte, error) {
 	cmd := exec.CommandContext(c.returnCtx(), "ncrack", c.args...)
 	buf, errBuf := bytes.NewBuffer(nil), bytes.NewBuffer(nil)
 	cmd.Stdout = buf
@@ -44,7 +45,7 @@ func (c Cracker) RunBytes() ([]byte, error) {
 
 // Run synchronously executes ncrack
 func (c Cracker) Run() (res *Run, err error) {
-	data, err := c.RunBytes()
+	data, err := c.runBytes()
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +56,7 @@ func (c Cracker) Run() (res *Run, err error) {
 	if err != nil {
 		return nil, err
 	}
+	res.Services = c.filterServices(res.Services)
 	return res, nil
 }
 
@@ -63,4 +65,17 @@ func (c Cracker) returnCtx() context.Context {
 		return context.Background()
 	}
 	return c.ctx
+}
+
+func (c Cracker) filterServices(ss []Service) []Service {
+	if c.filterFunc == nil {
+		return ss
+	}
+	nss := []Service{}
+	for i := range ss {
+		if c.filterFunc(&ss[i]) {
+			nss = append(nss, ss[i])
+		}
+	}
+	return nss
 }
