@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 
 	"fmt"
@@ -10,6 +11,7 @@ import (
 
 func main() {
 	c := ncrack.New(
+		ncrack.WithContext(context.Background()),
 		ncrack.WithHostOption(
 			ncrack.WithHostOptionPorts(5437),
 			ncrack.WithHostOptionProtocols(ncrack.ProtocolTypePostgres.String()),
@@ -17,7 +19,7 @@ func main() {
 			ncrack.WithHostOptionPorts(5433),
 			ncrack.WithHostOptionTarget("localhost"),
 			ncrack.WithServiceOptions(
-				ncrack.WithServiceOptionConnDelay(1),
+				ncrack.WithServiceOptionConnDelay("1"),
 			),
 		),
 		ncrack.WithHostOption(
@@ -25,18 +27,20 @@ func main() {
 			ncrack.WithHostOptionPorts(2222),
 			ncrack.WithHostOptionTarget("localhost"),
 			ncrack.WithServiceOptions(
-				ncrack.WithServiceOptionConnDelay(1),
+				ncrack.WithServiceOptionConnDelay("1"),
 			),
 		),
 		ncrack.WithModuleOption(
-			ncrack.WithModuleOptionProtocol("psql,ssh", "ftp"),
+			ncrack.WithModuleOptionProtocol("psql"),
 			ncrack.WithModuleServiceOptions(
 				ncrack.WithServiceOptionMinConnLimit(5),
+				ncrack.WithServiceOptionConnDelay("30"),
 			),
 		),
 		ncrack.WithModuleOption(
 			ncrack.WithModuleOptionProtocol("ssh"),
 			ncrack.WithModuleServiceOptions(
+				ncrack.WithServiceOptionAuthTries(5),
 				ncrack.WithServiceOptionMinConnLimit(5),
 			),
 		),
@@ -44,8 +48,6 @@ func main() {
 		ncrack.WithPass("postgres", "admin", "psql", "postgres"),
 		ncrack.WithXMLOutput(),
 	)
-
-	fmt.Println(c.Args())
 
 	res, err := c.Run()
 	if err != nil {
@@ -57,5 +59,4 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(string(buf))
-
 }
